@@ -1,0 +1,142 @@
+// iBILIB database schema (PostgreSQL — used for hosted deployments)
+// NOTE: keep in sync with schema.prisma (SQLite for local development).
+// Only the datasource provider differs.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Grade {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // "Grade 7"
+  level     Int      @unique // 7, 8, 9, 10, 11, 12
+  subjects  Subject[]
+  materials LearningMaterial[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id        Int      @id @default(autoincrement())
+  name      String
+  gradeId   Int
+  grade     Grade    @relation(fields: [gradeId], references: [id], onDelete: Restrict)
+  materials LearningMaterial[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([gradeId, name])
+}
+
+model Tag {
+  id        Int                @id @default(autoincrement())
+  name      String             @unique
+  materials LearningMaterial[] @relation("MaterialTags")
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model LearningMaterial {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  topic       String?
+  author      String?
+  gradeId     Int
+  grade       Grade    @relation(fields: [gradeId], references: [id], onDelete: Restrict)
+  subjectId   Int
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  tags        Tag[]    @relation("MaterialTags")
+  file        File?    @relation("MaterialFile")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([gradeId])
+  @@index([subjectId])
+}
+
+model ResearchCategory {
+  id        Int               @id @default(autoincrement())
+  name      String            @unique // "Research Project", "Practical Research 1", ...
+  slug      String            @unique // "research-project", "practical-research-1", ...
+  projects  ResearchProject[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model ResearchProject {
+  id          Int               @id @default(autoincrement())
+  title       String
+  abstract    String?
+  authors     String?           // JSON array string, e.g. ["A. Cruz","B. Reyes"]
+  categoryId  Int
+  category    ResearchCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  gradeLevel  String?           // "Grade 11"
+  strand      String?           // "STEM", "HUMSS", ...
+  adviser     String?
+  school      String?
+  year        Int?
+  keywords    String?           // JSON array string
+  description String?
+  references  String?           // free-form bibliography text
+  file        File?             @relation("ResearchFile")
+  chapters    ResearchChapter[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([categoryId])
+}
+
+model ResearchChapter {
+  id        Int              @id @default(autoincrement())
+  title     String           // "Chapter 1", "Chapter 2", ..., "References"
+  content   String?          // optional short summary/notes
+  sortOrder Int              @default(1)
+  projectId Int
+  project   ResearchProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  file      File?            @relation("ChapterFile")
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([projectId, sortOrder])
+}
+
+model File {
+  id                Int               @id @default(autoincrement())
+  filename          String            // stored name in storage
+  originalFilename  String            // original name as uploaded
+  fileType          String            // mime type
+  fileSize          Int               // bytes
+  path              String            // storage path, e.g. uploads/x.pdf or uploads/<bucket>/x.pdf
+  material          LearningMaterial? @relation("MaterialFile", fields: [materialId], references: [id], onDelete: Cascade)
+  materialId        Int?              @unique
+  researchProject   ResearchProject?  @relation("ResearchFile", fields: [researchProjectId], references: [id], onDelete: Cascade)
+  researchProjectId Int?              @unique
+  researchChapter   ResearchChapter?  @relation("ChapterFile", fields: [researchChapterId], references: [id], onDelete: Cascade)
+  researchChapterId Int?              @unique
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+model View {
+  id           Int      @id @default(autoincrement())
+  resourceType String   // "material" | "research" | "chapter"
+  resourceId   Int
+  createdAt    DateTime @default(now())
+
+  @@index([resourceType, resourceId])
+}
+
+model Download {
+  id           Int      @id @default(autoincrement())
+  resourceType String   // "material" | "research" | "chapter"
+  resourceId   Int
+  createdAt    DateTime @default(now())
+
+  @@index([resourceType, resourceId])
+}

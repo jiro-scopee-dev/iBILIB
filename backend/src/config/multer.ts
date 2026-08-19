@@ -1,21 +1,8 @@
 import multer from 'multer';
 import { ApiError } from '../middleware/errorHandler';
-import { ALLOWED_MIME_TYPES, assertAllowedFile, ensureDir, generateStoredFilename } from '../utils/fileUtils';
-import { env } from './env';
+import { ALLOWED_MIME_TYPES, assertAllowedFile } from '../utils/fileUtils';
 
-ensureDir(env.uploadDir);
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, env.uploadDir),
-  filename: (_req, file, cb) => {
-    try {
-      assertAllowedFile(file.originalname);
-      cb(null, generateStoredFilename(file.originalname));
-    } catch (err) {
-      cb(err as Error, '');
-    }
-  },
-});
+const memoryStorage = multer.memoryStorage();
 
 const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const okMime = ALLOWED_MIME_TYPES.includes(file.mimetype);
@@ -31,7 +18,7 @@ const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterC
 };
 
 export const upload = multer({
-  storage,
+  storage: memoryStorage,
   fileFilter,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
 });

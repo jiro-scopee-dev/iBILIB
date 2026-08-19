@@ -151,9 +151,9 @@ export const materialService = {
 
   async remove(id: number) {
     const material = assertExists(await materialRepository.findById(id), 'Material not found');
-    const diskFilenames = material.file ? [material.file.filename] : [];
+    const file = material.file ?? null;
     await materialRepository.delete(id);
-    for (const filename of diskFilenames) fileService.removeFromDisk(filename);
+    if (file) await fileService.removeStoredFile(file.path);
     await statsRepository.deleteForResource('material', id);
     return material;
   },

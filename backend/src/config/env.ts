@@ -11,4 +11,9 @@ export const env = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // 'local' stores uploads on disk; 'supabase' stores them in Supabase Storage.
+  storageBackend: process.env.STORAGE_BACKEND === 'supabase' ? 'supabase' : 'local',
+  supabaseUrl: process.env.SUPABASE_URL || '',
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  supabaseBucket: process.env.SUPABASE_BUCKET || 'uploads',
 };

@@ -74,13 +74,18 @@ export const filesController = {
 
   async raw(req: any, res: any) {
     const file = await fileService.getById(Number(req.params.id));
-    const abs = fileService.readFromDisk(file);
+    const location = await fileService.readableLocation(file);
+    if (location.startsWith('http')) {
+      const url = req.query.download !== undefined ? `${location}${location.includes('?') ? '&' : '?'}download=1` : location;
+      res.redirect(302, url);
+      return;
+    }
     if (req.query.download !== undefined) {
       res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.originalFilename)}`);
     }
     res.setHeader('Content-Type', file.fileType);
     res.setHeader('Content-Length', String(file.fileSize));
-    res.sendFile(abs);
+    res.sendFile(location);
   },
 
   async remove(req: any, res: any) {

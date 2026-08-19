@@ -13,13 +13,19 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "db:reset": "prisma db push --force-reset"
+    "db:reset": "prisma db push --force-reset",
+    "db:push:pg": "prisma db push --schema prisma/schema.postgres.prisma",
+    "db:seed:pg": "prisma db seed --schema prisma/schema.postgres.prisma",
+    "generate:pg": "prisma generate --schema prisma/schema.postgres.prisma",
+    "dump:local": "tsx scripts/dump-local.ts",
+    "import:pg": "tsx scripts/import-postgres.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.112.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",

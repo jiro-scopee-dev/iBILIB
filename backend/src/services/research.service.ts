@@ -149,14 +149,14 @@ export async function updateResearch(id: number, input: ResearchInput) {
 export async function deleteResearch(id: number) {
   const project = assertExists(await researchRepository.findById(id), 'Research project not found');
 
-  const diskFilenames = [
-    ...project.chapters.filter((c) => c.file).map((c) => c.file!.filename),
-    ...(project.file ? [project.file.filename] : []),
+  const storedPaths = [
+    ...project.chapters.filter((c) => c.file).map((c) => c.file!.path),
+    ...(project.file ? [project.file.path] : []),
   ];
 
   await researchRepository.delete(id);
 
-  for (const filename of diskFilenames) deleteFileFromDisk(filename);
+  for (const p of storedPaths) await deleteFileFromDisk(p);
   await statsRepository.deleteForResource('research', id);
   return project;
 }
@@ -223,9 +223,9 @@ export async function updateChapter(chapterId: number, input: ChapterInput) {
 
 export async function deleteChapter(chapterId: number) {
   const chapter = assertExists(await chapterRepository.findById(chapterId), 'Chapter not found');
-  const diskFilename = chapter.file?.filename;
+  const storedPath = chapter.file?.path;
   await chapterRepository.delete(chapterId);
-  if (diskFilename) deleteFileFromDisk(diskFilename);
+  if (storedPath) await deleteFileFromDisk(storedPath);
   await statsRepository.deleteForResource('chapter', chapterId);
   return chapter;
 }
