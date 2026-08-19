@@ -98,7 +98,7 @@ export default function AdminGradesPage() {
                   <td>{g._count?.materials ?? 0}</td>
                   <td>
                     <div className="row-actions">
-                      <Link href={`/library/grade-${g.level}`} className="btn btn-sm btn-secondary">View</Link>
+                      <Link href={`/modules/grade-${g.level}`} className="btn btn-sm btn-secondary">View</Link>
                       <button className="btn btn-sm btn-danger" onClick={() => handleDelete(g)}>Delete</button>
                     </div>
                   </td>

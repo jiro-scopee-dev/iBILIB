@@ -1,38 +1,70 @@
-'use client';
-
 import Link from 'next/link';
-import { Loading, ErrorBox } from '../../components/Status';
-import ViewToggle, { useViewMode } from '../../components/ViewToggle';
-import { useGrades } from '../../hooks/useCatalog';
+import styles from './library.module.css';
+
+const COLLECTIONS = [
+  {
+    index: '01',
+    chapter: 'The Collection',
+    title: 'Learning Materials',
+    tag: 'Modules for grades 7 to 12, filed by subject and quarter.',
+    body: 'The main archive — modules for every grade level, filed by subject, quarter, and module number, ready to read or download.',
+    meta: ['Grades 7–12', 'By subject and quarter', 'Read · download · print'],
+    href: '/modules',
+    cta: 'Open Learning Materials',
+  },
+  {
+    index: '02',
+    chapter: 'The Stacks',
+    title: 'Research Papers',
+    tag: 'Projects bound and shelved whole, filed by category and chapter.',
+    body: 'Research projects from proposal to findings — research project, practical research, and capstone, each with its chapters and references.',
+    meta: ['Research Project', 'Practical Research 1 & 2', 'Capstone'],
+    href: '/research',
+    cta: 'Open Research Papers',
+  },
+];
 
 export default function LibraryPage() {
-  const grades = useGrades();
-  const [view, setView] = useViewMode();
-
   return (
-    <div>
-      <div className="page-header">
-        <h1>Learning Materials Library</h1>
-        <p>Browse learning materials organized by grade level.</p>
-      </div>
-      {grades.loading && <Loading />}
-      {grades.error && <ErrorBox message={grades.error} onRetry={grades.reload} />}
-      <div className="toolbar">
-        <ViewToggle mode={view} onChange={setView} />
-      </div>
-      <div className={`grid${view === 'list' ? ' is-list' : ''}`}>
-        {grades.data?.map((grade) => (
-          <Link key={grade.id} href={`/library/grade-${grade.level}`} className="card card-title">
-            {grade.name}
-            <span className="muted" style={{ fontWeight: 400, fontSize: 13 }}>
-              {grade._count?.subjects ?? 0} subjects Â· {grade._count?.materials ?? 0} materials
-            </span>
-          </Link>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>
+          The <em>library</em>
+        </h1>
+        <p className={styles.lede}>
+          Every module and paper lives under one of two collections. Choose where to begin.
+        </p>
+      </header>
+
+      <div className={styles.index}>
+        {COLLECTIONS.map((c) => (
+          <section key={c.index} className={styles.row}>
+            <span className={styles.indexNumber}>{c.index}</span>
+            <div className={styles.copy}>
+              <div className={styles.chapter}>{c.chapter}</div>
+              <h2 className={styles.rowTitle}>{c.title}</h2>
+              <p className={styles.tag}>{c.tag}</p>
+              <p className={styles.body}>{c.body}</p>
+            </div>
+            <div className={styles.rail}>
+              <ul className={styles.meta}>
+                {c.meta.map((m) => (
+                  <li key={m}>{m}</li>
+                ))}
+              </ul>
+              <Link href={c.href} className={styles.cta}>
+                {c.cta}
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </section>
         ))}
       </div>
-      <Link href="/search" className="btn btn-secondary">
-        Search all materials
-      </Link>
+
+      <footer className={styles.outro}>
+        <span className={styles.outroRule} aria-hidden="true" />
+        <p>Two collections, one shelf.</p>
+      </footer>
     </div>
   );
 }

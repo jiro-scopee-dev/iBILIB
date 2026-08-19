@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ResearchCard from '../../../components/ResearchCard';
 import Pagination from '../../../components/Pagination';
 import DownloadButton from '../../../components/DownloadButton';
+import FileViewer from '../../../components/FileViewer';
 import { Loading, ErrorBox, EmptyState } from '../../../components/Status';
 import ViewToggle, { useViewMode } from '../../../components/ViewToggle';
 import { useCategories } from '../../../hooks/useCatalog';
@@ -65,6 +66,13 @@ function ResearchDetail({ id }: { id: number }) {
         </div>
       </div>
 
+      <FileViewer
+        resourceType="research"
+        resourceId={project.id}
+        file={project.file}
+        downloadLabel="Download complete research document"
+      />
+
       <div className="form-box">
         <h2>Research Information</h2>
         <ul className="detail-list">
@@ -97,18 +105,7 @@ function ResearchDetail({ id }: { id: number }) {
           </div>
         )}
 
-        <div style={{ marginTop: 16 }}>
-          {project.file ? (
-            <DownloadButton
-              resourceType="research"
-              resourceId={project.id}
-              file={project.file}
-              label="Download complete research document"
-            />
-          ) : (
-            <span className="muted">No complete research document attached.</span>
-          )}
-        </div>
+        {!project.file && <span className="muted">No complete research document attached.</span>}
       </div>
 
       <h2 className="section-title">Chapters</h2>

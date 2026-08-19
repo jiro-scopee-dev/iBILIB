@@ -1,17 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Fraunces, Outfit } from 'next/font/google';
+import { Archivo, Abril_Fatface } from 'next/font/google';
 import './globals.css';
 import Navbar from '../components/Navbar';
 
-const outfit = Outfit({
+const achivo = Archivo({
   subsets: ['latin'],
   variable: '--font-body',
   display: 'swap',
 });
 
-const fraunces = Fraunces({
+const abrilFatface = Abril_Fatface({
   subsets: ['latin'],
+  weight: '400',
   variable: '--font-display',
   display: 'swap',
 });
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${fraunces.variable}`}>
+    <html lang="en" className={`${achivo.variable} ${abrilFatface.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

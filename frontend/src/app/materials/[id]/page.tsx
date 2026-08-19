@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import MaterialCard from '../../../components/MaterialCard';
-import DownloadButton from '../../../components/DownloadButton';
+import FileViewer from '../../../components/FileViewer';
 import { Loading, ErrorBox } from '../../../components/Status';
 import { useMaterial, useRelatedMaterials } from '../../../hooks/useMaterials';
 import { statsService } from '../../../services/stats.service';
@@ -32,8 +32,8 @@ export default function MaterialDetailPage() {
   return (
     <div>
       <div className="breadcrumbs">
-        <Link href="/library">Library</Link> /{' '}
-        <Link href={`/library/grade-${material.grade.level}`}>{material.grade.name}</Link> / {material.title}
+        <Link href="/modules">Modules</Link> /{' '}
+        <Link href={`/modules/grade-${material.grade.level}`}>{material.grade.name}</Link> / {material.title}
       </div>
 
       <div className="page-header">
@@ -54,6 +54,8 @@ export default function MaterialDetailPage() {
           <div className="label">Downloads</div>
         </div>
       </div>
+
+      <FileViewer resourceType="material" resourceId={material.id} file={material.file} downloadLabel="Download material" />
 
       <div className="form-box">
         <h2>About this material</h2>
@@ -79,16 +81,7 @@ export default function MaterialDetailPage() {
           </div>
         )}
         <div style={{ marginTop: 16 }}>
-          {material.file ? (
-            <DownloadButton
-              resourceType="material"
-              resourceId={material.id}
-              file={material.file}
-              label="Download material"
-            />
-          ) : (
-            <span className="muted">No file attached to this material.</span>
-          )}
+          {!material.file && <span className="muted">No file attached to this material.</span>}
         </div>
       </div>
 

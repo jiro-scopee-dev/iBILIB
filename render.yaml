@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: ibilib-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npx prisma db push && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        value: file:/var/data/ibilib.db
+      - key: UPLOAD_DIRECTORY
+        value: /var/data/uploads
+      - key: CLIENT_URL
+        value: https://replace-with-your-frontend-url.onrender.com
+    disk:
+      name: ibilib-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: ibilib-web
+    runtime: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_API_URL
+        value: https://replace-with-your-backend-url.onrender.com/api
