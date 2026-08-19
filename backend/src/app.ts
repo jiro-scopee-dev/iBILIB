@@ -8,7 +8,7 @@ import { catalogRouter } from './routes/catalog.routes';
 
 const app = express();
 
-app.use(cors({ origin: env.clientUrl, credentials: true }));
+app.use(cors({ origin: env.clientOrigins, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
